@@ -8,10 +8,10 @@ configure_lit_site_cfg(
 set (MLIR_TUTORIAL_TEST_DEPENDS
     FileCheck count not
     mlir-opt
-#    mlir-cpu-runner
+    mlir-runner
 )
 
-add_lit_testsuite(check-mlir-ctlz "Running the toy language regression tests"
+add_lit_testsuite(toy-tests "Running the toy language regression tests"
     ${CMAKE_CURRENT_BINARY_DIR}
     DEPENDS ${MLIR_TUTORIAL_TEST_DEPENDS}
 )

@@ -5,4 +5,4 @@ repo_root=$(realpath $(dirname $0)/..)
 build_root=$repo_root/build
 build_dir=$build_root/toy
 
-ninja -C$build_dir check-mlir-ctlz -j 9
+ninja -C$build_dir toy-tests -j 9
