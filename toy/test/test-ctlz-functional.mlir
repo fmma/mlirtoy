@@ -1,4 +1,4 @@
-// RUN: mlir-opt %s \
+// RUN: toy-opt %s \
 // RUN:   --pass-pipeline="builtin.module( \
 // RUN:      convert-math-to-funcs{convert-ctlz}, \
 // RUN:      func.func(convert-scf-to-cf,convert-arith-to-llvm), \

@@ -9,6 +9,7 @@ set (MLIR_TUTORIAL_TEST_DEPENDS
     FileCheck count not
     mlir-opt
     mlir-runner
+    toy-opt
 )
 
 add_lit_testsuite(toy-tests "Running the toy language regression tests"

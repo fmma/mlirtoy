@@ -1,4 +1,4 @@
-// RUN: mlir-opt %s --convert-math-to-funcs=convert-ctlz | FileCheck %s
+// RUN: toy-opt %s --convert-math-to-funcs=convert-ctlz | FileCheck %s
 
 func.func @main(%arg0: i32) -> i32 {
   // CHECK-NOT: math.ctlz
