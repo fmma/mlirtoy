@@ -19,8 +19,6 @@ namespace mlir
 
         struct IMPL_TW : impl::AffineFullUnrollTreeWalkBase<IMPL_TW>
         {
-            using AffineFullUnrollTreeWalkBase::AffineFullUnrollTreeWalkBase;
-
             void runOnOperation()
             {
                 getOperation()->walk(
@@ -35,20 +33,18 @@ namespace mlir
             }
         };
 
-        struct AffineFullUnrollPattern : public OpRewritePattern<AffineForOp>
-        {
-            AffineFullUnrollPattern(mlir::MLIRContext *context)
-                : OpRewritePattern<AffineForOp>(context, /*benefit=*/1) {}
-
-            LogicalResult matchAndRewrite(AffineForOp op, PatternRewriter &rewriter) const override
-            {
-                return loopUnrollFull(op);
-            }
-        };
-
         struct IMPT_PRW : impl::AffineFullUnrollPatternRewriteBase<IMPT_PRW>
         {
-            using AffineFullUnrollPatternRewriteBase::AffineFullUnrollPatternRewriteBase;
+            struct AffineFullUnrollPattern : public OpRewritePattern<AffineForOp>
+            {
+                AffineFullUnrollPattern(mlir::MLIRContext *context)
+                    : OpRewritePattern<AffineForOp>(context, /*benefit=*/1) {}
+    
+                LogicalResult matchAndRewrite(AffineForOp op, PatternRewriter &rewriter) const override
+                {
+                    return loopUnrollFull(op);
+                }
+            };
 
             void runOnOperation()
             {
