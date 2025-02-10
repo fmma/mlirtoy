@@ -2,7 +2,7 @@ add_mlir_library(AffineFullUnroll
     AffineFullUnroll.cpp
     
     DEPENDS
-    MLIRAffineFullUnrollPasses
+    ToyTableGenAffineFullUnrollPasses
 
     LINK_LIBS PUBLIC
 )
