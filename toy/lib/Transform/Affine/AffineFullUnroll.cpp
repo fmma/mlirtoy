@@ -17,7 +17,7 @@ namespace mlir
         using mlir::affine::AffineForOp;
         using mlir::affine::loopUnrollFull;
 
-        struct AffineFullUnrollTreeWalk : impl::AffineFullUnrollTreeWalkBase<AffineFullUnrollTreeWalk>
+        struct IMPL_TW : impl::AffineFullUnrollTreeWalkBase<IMPL_TW>
         {
             using AffineFullUnrollTreeWalkBase::AffineFullUnrollTreeWalkBase;
 
@@ -46,7 +46,7 @@ namespace mlir
             }
         };
 
-        struct AffineFullUnrollPatternRewrite : impl::AffineFullUnrollPatternRewriteBase<AffineFullUnrollPatternRewrite>
+        struct IMPT_PRW : impl::AffineFullUnrollPatternRewriteBase<IMPT_PRW>
         {
             using AffineFullUnrollPatternRewriteBase::AffineFullUnrollPatternRewriteBase;
 
