@@ -3,9 +3,10 @@
 
 #include "toy/Transform/Affine/AffineFullUnroll.h"
 
-namespace mlir::toy {
-    #define GEN_PASS_REGISTRATION
-    #include "toy/Transform/Affine/Passes.h.inc"
+namespace mlir::toy
+{
+#define GEN_PASS_REGISTRATION
+#include "toy/Transform/Affine/Passes.h.inc"
 }
 
 #endif

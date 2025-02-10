@@ -5,14 +5,11 @@
 #include "mlir/Dialect/Func/IR/FuncOps.h"
 #include "mlir/Pass/Pass.h"
 
-namespace mlir
+namespace mlir::toy
 {
-    namespace toy
-    {
 #define GEN_PASS_DECL_AFFINEFULLUNROLLTREEWALK
 #define GEN_PASS_DECL_AFFINEFULLUNROLLPATTERNREWRITE
 #include "toy/Transform/Affine/Passes.h.inc"
-    }
 }
 
 #endif
