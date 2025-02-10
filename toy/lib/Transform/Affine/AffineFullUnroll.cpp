@@ -28,7 +28,7 @@ namespace mlir::toy
         }
     };
 
-    struct IMPT_PRW : impl::AffineFullUnrollPatternRewriteBase<IMPT_PRW>
+    struct IMPL_PRW : impl::AffineFullUnrollPatternRewriteBase<IMPL_PRW>
     {
         struct AffineFullUnrollPattern : public OpRewritePattern<mlir::affine::AffineForOp>
         {
