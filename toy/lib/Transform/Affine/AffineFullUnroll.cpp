@@ -9,21 +9,31 @@ namespace mlir
 {
     namespace toy
     {
+
+#define GEN_PASS_DEF_AFFINEFULLUNROLLPATTERNREWRITE
+#define GEN_PASS_DEF_AFFINEFULLUNROLLTREEWALK
+#include "toy/Transform/Affine/Passes.h.inc"
+
         using mlir::affine::AffineForOp;
         using mlir::affine::loopUnrollFull;
 
-        void AffineFullUnrollPassAsTreeWalk::runOnOperation()
+        struct AffineFullUnrollTreeWalk : impl::AffineFullUnrollTreeWalkBase<AffineFullUnrollTreeWalk>
         {
-            getOperation().walk(
-                [&](AffineForOp op)
-                {
-                    if (failed(loopUnrollFull(op)))
+            using AffineFullUnrollTreeWalkBase::AffineFullUnrollTreeWalkBase;
+
+            void runOnOperation()
+            {
+                getOperation()->walk(
+                    [&](AffineForOp op)
                     {
-                        op.emitError("unrolling failed");
-                        signalPassFailure();
-                    }
-                });
-        }
+                        if (failed(loopUnrollFull(op)))
+                        {
+                            op.emitError("unrolling failed");
+                            signalPassFailure();
+                        }
+                    });
+            }
+        };
 
         struct AffineFullUnrollPattern : public OpRewritePattern<AffineForOp>
         {
@@ -36,11 +46,16 @@ namespace mlir
             }
         };
 
-        void AffineFullUnrollPassAsPatternRewrite::runOnOperation()
+        struct AffineFullUnrollPatternRewrite : impl::AffineFullUnrollPatternRewriteBase<AffineFullUnrollPatternRewrite>
         {
-            mlir::RewritePatternSet patterns(&getContext());
-            patterns.add<AffineFullUnrollPattern>(&getContext());
-            (void)applyPatternsGreedily(getOperation(), std::move(patterns));
-        }
+            using AffineFullUnrollPatternRewriteBase::AffineFullUnrollPatternRewriteBase;
+
+            void runOnOperation()
+            {
+                mlir::RewritePatternSet patterns(&getContext());
+                patterns.add<AffineFullUnrollPattern>(&getContext());
+                (void)applyPatternsGreedily(getOperation(), std::move(patterns));
+            }
+        };
     }
 }
