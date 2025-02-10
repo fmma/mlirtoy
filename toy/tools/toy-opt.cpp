@@ -4,6 +4,7 @@
 #include "mlir/Pass/PassRegistry.h"
 #include "mlir/Tools/mlir-opt/MlirOptMain.h"
 #include "toy/Transform/Affine/Passes.h"
+#include "toy/Dialect/Toy/ToyDialect.h"
 
 int main(int argc, char **argv)
 {
@@ -12,6 +13,9 @@ int main(int argc, char **argv)
     mlir::registerAllPasses();
     mlir::toy::registerAffinePasses();
 
-    return mlir::asMainReturnCode(
-        mlir::MlirOptMain(argc, argv, "Toy language pass driver", registry));
+    registry.insert<mlir::toy::ToyDialect>();
+
+    auto logicalResult = mlir::MlirOptMain(argc, argv, "Toy language pass driver", registry);
+
+    return mlir::asMainReturnCode(logicalResult);
 }
