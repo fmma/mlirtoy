@@ -9,9 +9,7 @@ namespace mlir
 {
     namespace toy
     {
-        class AffineFullUnrollPassAsTreeWalk
-            : public PassWrapper<AffineFullUnrollPassAsTreeWalk,
-                                 OperationPass<mlir::func::FuncOp>>
+        class AffineFullUnrollPassAsTreeWalk : public PassWrapper<AffineFullUnrollPassAsTreeWalk, OperationPass<mlir::func::FuncOp>>
         {
         private:
             void runOnOperation() override;
@@ -26,9 +24,7 @@ namespace mlir
                 return "Fully unroll all affine loops";
             }
         };
-        class AffineFullUnrollPassAsPatternRewrite
-            : public PassWrapper<AffineFullUnrollPassAsPatternRewrite,
-                                 OperationPass<mlir::func::FuncOp>>
+        class AffineFullUnrollPassAsPatternRewrite : public PassWrapper<AffineFullUnrollPassAsPatternRewrite, OperationPass<mlir::func::FuncOp>>
         {
         private:
             void runOnOperation() override;
