@@ -29,7 +29,7 @@ g++
 cmake
 ccache
 lld
-ninja
+ninja-build
 
 ## Building
 
