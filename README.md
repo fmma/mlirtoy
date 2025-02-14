@@ -4,6 +4,50 @@ A personal toy programming language for me to learn LLVM and MLIR.
 
 The language is inspired by Jeremy Kun's MLIR tutorial: https://github.com/j2kun/mlir-tutorial.
 
+## Name ideas
+
+- Microforth
+- MLIRforth
+- Concatica
+- Morth
+- Moth
+- Mirth
+- Mlirth
+
+## The language
+
+The language is a simple concatenative language. The grammar consists of expressions `e` including primiteves `p`, variables `x` and integer constants `n`. On top of that, we have definitions `d` and programs `p`.
+
+```
+p ::= d* e    (program)
+
+d ::= x = e;  (definition)
+
+e ::= e e     (concat)
+    | p       (primitive)
+    | x       (variable)
+    | n       (constant)
+
+p ::= dup
+    | pop
+    | mul
+    | add
+    | neg
+    | and
+    | or
+    | put
+    | get
+
+n ::= <positive integer literals>
+```
+
+Example program:
+```
+double = dup mul
+get double put
+```
+
+The result is a program that reads a number from standard input, doubles it, and prints the result to standard output.
 
 ## Articles - progress
 
@@ -20,7 +64,6 @@ The language is inspired by Jeremy Kun's MLIR tutorial: https://github.com/j2kun
 11. [Lowering through LLVM](https://jeremykun.com/2023/11/01/mlir-lowering-through-llvm/)
 12. [A Global Optimization and Dataflow Analysis](https://jeremykun.com/2023/11/15/mlir-a-global-optimization-and-dataflow-analysis/)
 12. [Defining Patterns with PDLL](https://www.jeremykun.com/2024/08/04/mlir-pdll/)
-
 
 ## Prerequisites
 
