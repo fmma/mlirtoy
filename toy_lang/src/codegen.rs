@@ -92,6 +92,32 @@ fn compile_expr_to_mlir(mlir_prog: &MlirProgram, toy_expr: ToyExpression, mlir: 
                 mlir.push(y);
                 mlir.push(x);
             }
+            ToyPrim::Get => {
+                mlir.emit("toy.get : i32".to_owned(),1);
+            },
+            ToyPrim::Put => {
+                let x = mlir.pop();
+                mlir.emit(format!("toy.put {}", x), 0);
+            },
+            ToyPrim::Add => {
+                let x = mlir.pop();
+                let y = mlir.pop();
+                mlir.emit(format!("toy.add {} {} : i32", x, y), 1);
+            }
+            ToyPrim::Neg => {
+                let x = mlir.pop();
+                mlir.emit(format!("toy.neg {} : i32", x), 1);
+            }
+            ToyPrim::And => {
+                let x = mlir.pop();
+                let y = mlir.pop();
+                mlir.emit(format!("toy.and {} {} : i32", x, y), 1);
+            }
+            ToyPrim::Or => {
+                let x = mlir.pop();
+                let y = mlir.pop();
+                mlir.emit(format!("toy.or {} {} : i32", x, y), 1);
+            }
         },
         ToyExpression::Constant(toy_constant) => {
             mlir.emit(format!("toy.constant {} : i32", toy_constant.0), 1);

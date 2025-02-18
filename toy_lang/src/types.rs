@@ -12,7 +12,13 @@ pub(crate) enum ToyPrim {
     Swap2,
     Rot,
     Over,
-    Mul
+    Get,
+    Put,
+    Mul,
+    Add,
+    Neg,
+    And,
+    Or
 }
 
 #[derive(Debug, Clone)]

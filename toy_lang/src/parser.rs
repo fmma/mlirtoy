@@ -50,11 +50,17 @@ fn parse_prim(input: &str) -> IResult<&str, ToyPrim> {
     ws(alt((
         value(ToyPrim::Dup, tag("dup")),
         value(ToyPrim::Drop, tag("drop")),
-        value(ToyPrim::Mul, tag("mul")),
         value(ToyPrim::Swap, tag("swap")),
         value(ToyPrim::Swap2, tag("2swap")),
         value(ToyPrim::Rot, tag("rot")),
         value(ToyPrim::Over, tag("over")),
+        value(ToyPrim::Get, tag("get")),
+        value(ToyPrim::Put, tag("put")),
+        value(ToyPrim::Mul, tag("mul")),
+        value(ToyPrim::Add, tag("add")),
+        value(ToyPrim::Neg, tag("neg")),
+        value(ToyPrim::And, tag("and")),
+        value(ToyPrim::Or, tag("or")),
     )))
     .parse(input)
 }
