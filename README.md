@@ -29,7 +29,11 @@ e ::= e e     (concat)
     | n       (constant)
 
 p ::= dup
-    | pop
+    | drop
+    | swap
+    | swap2
+    | rot
+    | over
     | mul
     | add
     | neg
