@@ -2,7 +2,6 @@
 
 #include "toy/Dialect/Toy/ToyDialect.h"
 #include "toy/Dialect/Toy/ToyTypes.h"
-#include "mlir/IR/Builders.h"
 #include "llvm/ADT/TypeSwitch.h"
 
 #include "toy/Dialect/Toy/ToyDialect.cpp.inc"
