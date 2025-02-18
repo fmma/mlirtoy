@@ -1,9 +1,7 @@
 use nom::{
     branch::alt,
     bytes::complete::tag,
-    character::
-        complete::{alpha1, alphanumeric1, char, one_of, space0}
-    ,
+    character::complete::{alpha1, alphanumeric1, char, multispace0, one_of},
     combinator::{recognize, value},
     error::ParseError,
     multi::{many0, many0_count, many1},
@@ -21,7 +19,7 @@ pub fn parse_program(input: &str) -> IResult<&str, ToyProgram> {
 
 fn parse_def(input: &str) -> IResult<&str, ToyDef> {
     (parse_var, ws(tag("=")), parse_expression, ws(tag(";")))
-        .map(|(name, _, body, _)| ToyDef{name, body})
+        .map(|(name, _, body, _)| ToyDef { name, body })
         .parse(input)
 }
 
@@ -51,8 +49,12 @@ fn parse_expression_atom(input: &str) -> IResult<&str, ToyExpression> {
 fn parse_prim(input: &str) -> IResult<&str, ToyPrim> {
     ws(alt((
         value(ToyPrim::Dup, tag("dup")),
-        value(ToyPrim::Pop, tag("pop")),
+        value(ToyPrim::Drop, tag("drop")),
         value(ToyPrim::Mul, tag("mul")),
+        value(ToyPrim::Swap, tag("swap")),
+        value(ToyPrim::Swap2, tag("2swap")),
+        value(ToyPrim::Rot, tag("rot")),
+        value(ToyPrim::Over, tag("over")),
     )))
     .parse(input)
 }
@@ -84,5 +86,5 @@ pub fn identifier(input: &str) -> IResult<&str, &str> {
 fn ws<'a, O, E: ParseError<&'a str>, F: Parser<&'a str, Output = O, Error = E>>(
     f: F,
 ) -> impl Parser<&'a str, Output = O, Error = E> {
-    (space0, f).map(|(_, x)| x)
+    (multispace0, f).map(|(_, x)| x)
 }

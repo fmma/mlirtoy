@@ -7,7 +7,11 @@ pub(crate) struct ToyConstant(pub(crate) i32);
 #[derive(Clone, Debug, Copy)]
 pub(crate) enum ToyPrim {
     Dup,
-    Pop,
+    Drop,
+    Swap,
+    Swap2,
+    Rot,
+    Over,
     Mul
 }
 
