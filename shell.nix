@@ -1,4 +1,4 @@
 { pkgs ? import <nixpkgs> {} }:
   pkgs.mkShell {
-    nativeBuildInputs = with pkgs; [ gcc cmake ccache lld ninja python3 ];
+    nativeBuildInputs = with pkgs; [ gcc cmake ccache lld ninja python3 cargo ];
   }

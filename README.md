@@ -78,6 +78,15 @@ ccache
 lld
 ninja-build
 
+### Rust
+
+cargo
+
+```
+snap install rustup
+rustup default stable
+```
+
 ## Building
 
 You may have to adjust the -j in `scripts/llvm-project-build.sh` if the build crashes.
