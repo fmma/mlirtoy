@@ -6,7 +6,7 @@ The language is inspired by Jeremy Kun's MLIR tutorial: https://github.com/j2kun
 
 ## Name ideas
 
-- Microforth
+- Microforth (uforth)
 - MLIRforth
 - Concatica
 - Morth
@@ -60,7 +60,7 @@ The result is a program that reads a number from standard input, doubles it, and
 3.  DONE [Writing Our First Pass](https://jeremykun.com/2023/08/10/mlir-writing-our-first-pass/)
 4.  DONE [Using Tablegen for Passes](https://jeremykun.com/2023/08/10/mlir-using-tablegen-for-passes/)
 5.  DONE [Defining a New Dialect](https://jeremykun.com/2023/08/21/mlir-defining-a-new-dialect/)
-6.  [Using Traits](https://jeremykun.com/2023/09/07/mlir-using-traits/)
+6.  DONE [Using Traits](https://jeremykun.com/2023/09/07/mlir-using-traits/)
 7.  [Folders and Constant Propagation](https://jeremykun.com/2023/09/11/mlir-folders/)
 8.  [Verifiers](https://jeremykun.com/2023/09/13/mlir-verifiers/)
 9.  [Canonicalizers and Declarative Rewrite Patterns](https://jeremykun.com/2023/09/20/mlir-canonicalizers-and-declarative-rewrite-patterns/)

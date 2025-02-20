@@ -120,9 +120,7 @@ fn compile_expr_to_mlir(mlir_prog: &MlirProgram, toy_expr: ToyExpression, mlir: 
             }
         },
         ToyExpression::Constant(toy_constant) => {
-            mlir.emit(format!("arith.constant {} : i32", toy_constant.0), 1);
-            let x = mlir.pop();
-            mlir.emit(format!("toy.from_i32 {} : i32 -> !toy.int", x), 1);
+            mlir.emit(format!("toy.const {} : !toy.int", toy_constant.0), 1);
         }
         ToyExpression::Var(toy_var) => match mlir_prog
             .compiled_defs

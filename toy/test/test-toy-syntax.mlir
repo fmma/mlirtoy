@@ -9,9 +9,9 @@ module {
   }
 
   // CHECK-LABEL: test_add_syntax
-  func.func @test_add_syntax(%arg0: !toy.int<10>, %arg1: !toy.int<10>) -> !toy.int<10> {
-    // CHECK: toy.add
-    %0 = toy.add %arg0, %arg1 : !toy.int<10>
-    return %0 : !toy.int<10>
+  func.func @test_add_syntax(%arg0: !toy.int, %arg1: !toy.int) -> !toy.int {
+    %0 = toy.const 1 : !toy.int
+    %1 = toy.add %arg0, %0 : !toy.int
+    return %1 : !toy.int
   }
 }

@@ -37,3 +37,10 @@ def FromIntOp : Op<Toy_Dialect, "from_i32", [Pure]> {
   let results = (outs Int:$output);
   let assemblyFormat = "$input attr-dict `:` type($input) `->` type($output)";
 }
+
+def ConstantOp : Op<Toy_Dialect, "const", [Pure, ConstantLike]> {
+  let summary = "Constants";
+  let arguments = (ins I32Attr:$value);
+  let results = (outs Int:$output);
+  let assemblyFormat = "$value attr-dict `:` type($output)";
+}
