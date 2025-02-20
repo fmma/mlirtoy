@@ -5,16 +5,15 @@ use toy_lang::parser::parse;
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
 struct Args {
-    #[arg(short, long)]
-    src: String,
+    src_file: clap_stdin::FileOrStdin,
 }
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
-    println!("Hello {}!", args.src);
-    let program = parse(&args.src);
+    let program = parse(&args.src_file.contents()?);
 
     let cc = compile_to_mlir(&program);
 
     print!("{}", cc.to_mlir_string());
+    Ok(())
 }
