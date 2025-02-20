@@ -9,11 +9,11 @@ pub(crate) struct MlirFunc {
     pub(crate) instructions: Vec<(usize, String)>,
 }
 
-pub(crate) struct MlirProgram {
+pub struct MlirProgram {
     compiled_defs: Vec<MlirFunc>,
 }
 
-pub(crate) fn compile_to_mlir(program: &ToyProgram) -> MlirProgram {
+pub fn compile_to_mlir(program: &ToyProgram) -> MlirProgram {
     let mut mlir_prog = MlirProgram {
         compiled_defs: vec![],
     };
@@ -59,7 +59,7 @@ fn compile_expr_to_mlir(mlir_prog: &MlirProgram, toy_expr: ToyExpression, mlir: 
             ToyPrim::Mul => {
                 let x = mlir.pop();
                 let y = mlir.pop();
-                mlir.emit(format!("toy.mul {} {} : i32", x, y), 1);
+                mlir.emit(format!("toy.mul {} {} : !toy.int", x, y), 1);
             }
             ToyPrim::Swap => {
                 let x = mlir.pop();
@@ -93,7 +93,7 @@ fn compile_expr_to_mlir(mlir_prog: &MlirProgram, toy_expr: ToyExpression, mlir: 
                 mlir.push(x);
             }
             ToyPrim::Get => {
-                mlir.emit("toy.get : i32".to_owned(),1);
+                mlir.emit("toy.get : !toy.int".to_owned(),1);
             },
             ToyPrim::Put => {
                 let x = mlir.pop();
@@ -102,25 +102,27 @@ fn compile_expr_to_mlir(mlir_prog: &MlirProgram, toy_expr: ToyExpression, mlir: 
             ToyPrim::Add => {
                 let x = mlir.pop();
                 let y = mlir.pop();
-                mlir.emit(format!("toy.add {} {} : i32", x, y), 1);
+                mlir.emit(format!("toy.add {} {} : !toy.int", x, y), 1);
             }
             ToyPrim::Neg => {
                 let x = mlir.pop();
-                mlir.emit(format!("toy.neg {} : i32", x), 1);
+                mlir.emit(format!("toy.neg {} : !toy.int", x), 1);
             }
             ToyPrim::And => {
                 let x = mlir.pop();
                 let y = mlir.pop();
-                mlir.emit(format!("toy.and {} {} : i32", x, y), 1);
+                mlir.emit(format!("toy.and {} {} : !toy.int", x, y), 1);
             }
             ToyPrim::Or => {
                 let x = mlir.pop();
                 let y = mlir.pop();
-                mlir.emit(format!("toy.or {} {} : i32", x, y), 1);
+                mlir.emit(format!("toy.or {} {} : !toy.int", x, y), 1);
             }
         },
         ToyExpression::Constant(toy_constant) => {
-            mlir.emit(format!("toy.constant {} : i32", toy_constant.0), 1);
+            mlir.emit(format!("arith.constant {} : i32", toy_constant.0), 1);
+            let x = mlir.pop();
+            mlir.emit(format!("toy.from_i32 {} : i32 -> !toy.int", x), 1);
         }
         ToyExpression::Var(toy_var) => match mlir_prog
             .compiled_defs
@@ -174,7 +176,7 @@ impl MlirFunc {
         let in_type = format!(
             "({})",
             (0..self.n_args)
-                .map(|_x| "i32".to_owned())
+                .map(|_x| "!toy.int".to_owned())
                 .collect::<Vec<String>>()
                 .join(", ")
         );
@@ -182,7 +184,7 @@ impl MlirFunc {
         let out_type = format!(
             " -> ({})",
             (0..self.stack.len())
-                .map(|_x| "i32".to_owned())
+                .map(|_x| "!toy.int".to_owned())
                 .collect::<Vec<String>>()
                 .join(", ")
         );
@@ -195,14 +197,14 @@ impl MlirFunc {
         let mut i = 0;
 
         let args = (0..self.n_args)
-            .map(|x| format!("%arg_{} : i32", x))
+            .map(|x| format!("%arg_{} : !toy.int", x))
             .collect::<Vec<String>>()
             .join(", ");
 
         let out_type = format!(
             "({})",
             (0..self.stack.len())
-                .map(|_x| "i32".to_owned())
+                .map(|_x| "!toy.int".to_owned())
                 .collect::<Vec<String>>()
                 .join(", ")
         );
@@ -241,12 +243,12 @@ impl MlirFunc {
 
         let ret_type = match self.stack.len() {
             0 => "".to_owned(),
-            1 => format!(" : i32"),
+            1 => format!(" : !toy.int"),
             _ => format!(
                 " : {}",
                 self.stack
                     .iter()
-                    .map(|_| "i32".to_owned())
+                    .map(|_| "!toy.int".to_owned())
                     .collect::<Vec<String>>()
                     .join(", ")
             ),
@@ -260,7 +262,7 @@ impl MlirFunc {
 }
 
 impl MlirProgram {
-    pub(crate) fn to_mlir_string(self) -> String {
+    pub fn to_mlir_string(self) -> String {
         let mut funcs = vec![];
         for mlir in self.compiled_defs.iter() {
             funcs.push(mlir.clone().to_mlir_string());

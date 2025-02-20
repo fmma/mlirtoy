@@ -11,7 +11,15 @@ use nom::{
 
 use crate::types::*;
 
-pub fn parse_program(input: &str) -> IResult<&str, ToyProgram> {
+pub fn parse(src: &str) -> ToyProgram {
+    let (rest, program) = nom::Parser::parse(&mut parse_program, src).expect("Parse failure");
+    if rest.trim() != "" {
+        panic!("Parse failure. Unparsed suffix: {}", rest);
+    }
+    return program;
+}
+
+fn parse_program(input: &str) -> IResult<&str, ToyProgram> {
     (many0(parse_def), parse_expression)
         .map(|(defs, main)| ToyProgram { defs, main })
         .parse(input)
@@ -81,7 +89,7 @@ fn decimal(input: &str) -> IResult<&str, &str> {
     recognize(many1(terminated(one_of("0123456789"), many0(char('_'))))).parse(input)
 }
 
-pub fn identifier(input: &str) -> IResult<&str, &str> {
+fn identifier(input: &str) -> IResult<&str, &str> {
     recognize(pair(
         alt((alpha1, tag("_"))),
         many0_count(alt((alphanumeric1, tag("_")))),

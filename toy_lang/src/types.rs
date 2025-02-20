@@ -39,7 +39,7 @@ pub(crate) struct ToyDef {
 }
 
 #[derive(Debug)]
-pub(crate) struct ToyProgram {
+pub struct ToyProgram {
     pub(crate) defs: Vec<ToyDef>,
     pub(crate) main: ToyExpression,
 }
