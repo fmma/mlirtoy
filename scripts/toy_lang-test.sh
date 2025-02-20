@@ -7,4 +7,4 @@ build_dir=$build_root/toy_lang
 
 cd $repo_root/toy_lang
 
-CARGO_TARGET_DIR=$build_dir cargo test
+CARGO_TARGET_DIR=$build_dir cargo test -- --nocapture
