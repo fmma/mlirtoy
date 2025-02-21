@@ -21,10 +21,12 @@ class UnOp<string mnemonic> : Op<Toy_Dialect, mnemonic, [Pure, ElementwiseMappab
 
 def AddOp : BinOp<"add"> {
   let summary = "Addition.";
+  let hasFolder = 1;
 }
 
 def MulOp : BinOp<"mul"> {
   let summary = "Multiplication.";
+  let hasFolder = 1;
 }
 
 def NegOp : UnOp<"neg"> {
@@ -43,4 +45,5 @@ def ConstantOp : Op<Toy_Dialect, "const", [Pure, ConstantLike]> {
   let arguments = (ins I32Attr:$value);
   let results = (outs Int:$output);
   let assemblyFormat = "$value attr-dict `:` type($output)";
+  let hasFolder = 1;
 }
