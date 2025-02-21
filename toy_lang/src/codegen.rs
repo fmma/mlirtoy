@@ -56,11 +56,6 @@ fn compile_expr_to_mlir(mlir_prog: &MlirProgram, toy_expr: ToyExpression, mlir: 
             ToyPrim::Drop => {
                 mlir.pop();
             }
-            ToyPrim::Mul => {
-                let x = mlir.pop();
-                let y = mlir.pop();
-                mlir.emit(format!("toy.mul {} {} : !toy.int", x, y), 1);
-            }
             ToyPrim::Swap => {
                 let x = mlir.pop();
                 let y = mlir.pop();
@@ -93,16 +88,21 @@ fn compile_expr_to_mlir(mlir_prog: &MlirProgram, toy_expr: ToyExpression, mlir: 
                 mlir.push(x);
             }
             ToyPrim::Get => {
-                mlir.emit("toy.get : !toy.int".to_owned(),1);
-            },
+                mlir.emit("toy.get : !toy.int".to_owned(), 1);
+            }
             ToyPrim::Put => {
                 let x = mlir.pop();
                 mlir.emit(format!("toy.put {}", x), 0);
-            },
+            }
             ToyPrim::Add => {
                 let x = mlir.pop();
                 let y = mlir.pop();
-                mlir.emit(format!("toy.add {} {} : !toy.int", x, y), 1);
+                mlir.emit(format!("toy.add {}, {} : !toy.int", x, y), 1);
+            }
+            ToyPrim::Mul => {
+                let x = mlir.pop();
+                let y = mlir.pop();
+                mlir.emit(format!("toy.mul {}, {} : !toy.int", x, y), 1);
             }
             ToyPrim::Neg => {
                 let x = mlir.pop();
@@ -111,12 +111,12 @@ fn compile_expr_to_mlir(mlir_prog: &MlirProgram, toy_expr: ToyExpression, mlir: 
             ToyPrim::And => {
                 let x = mlir.pop();
                 let y = mlir.pop();
-                mlir.emit(format!("toy.and {} {} : !toy.int", x, y), 1);
+                mlir.emit(format!("toy.and {}, {} : !toy.int", x, y), 1);
             }
             ToyPrim::Or => {
                 let x = mlir.pop();
                 let y = mlir.pop();
-                mlir.emit(format!("toy.or {} {} : !toy.int", x, y), 1);
+                mlir.emit(format!("toy.or {}, {} : !toy.int", x, y), 1);
             }
         },
         ToyExpression::Constant(toy_constant) => {
@@ -232,7 +232,7 @@ impl MlirFunc {
                 "{}",
                 self.stack
                     .iter()
-//                    .rev()
+                    //                    .rev()
                     .map(|x| x.to_string())
                     .collect::<Vec<String>>()
                     .join(", ")
