@@ -62,16 +62,6 @@ fn compile_expr_to_mlir(mlir_prog: &MlirProgram, toy_expr: ToyExpression, mlir: 
                 mlir.push(x);
                 mlir.push(y);
             }
-            ToyPrim::Swap2 => {
-                let x = mlir.pop();
-                let y = mlir.pop();
-                let z = mlir.pop();
-                let w = mlir.pop();
-                mlir.push(y);
-                mlir.push(x);
-                mlir.push(w);
-                mlir.push(z);
-            }
             ToyPrim::Rot => {
                 let x = mlir.pop();
                 let y = mlir.pop();
@@ -118,6 +108,30 @@ fn compile_expr_to_mlir(mlir_prog: &MlirProgram, toy_expr: ToyExpression, mlir: 
                 let y = mlir.pop();
                 mlir.emit(format!("toy.or {}, {} : !toy.int", x, y), 1);
             }
+            ToyPrim::Sub => {
+                let x = mlir.pop();
+                let y = mlir.pop();
+                mlir.emit(format!("toy.sub {}, {} : !toy.int", x, y), 1);
+            },
+            ToyPrim::Div =>  {
+                let x = mlir.pop();
+                let y = mlir.pop();
+                mlir.emit(format!("toy.div {}, {} : !toy.int", x, y), 1);
+            },
+            ToyPrim::Eq =>  {
+                let x = mlir.pop();
+                let y = mlir.pop();
+                mlir.emit(format!("toy.eq {}, {} : !toy.int", x, y), 1);
+            },
+            ToyPrim::Less =>  {
+                let x = mlir.pop();
+                let y = mlir.pop();
+                mlir.emit(format!("toy.less {}, {} : !toy.int", x, y), 1);
+            },
+            ToyPrim::Not =>  {
+                let x = mlir.pop();
+                mlir.emit(format!("toy.not {} : !toy.int", x), 1);
+            },
         },
         ToyExpression::Constant(toy_constant) => {
             mlir.emit(format!("toy.const {} : !toy.int", toy_constant.0), 1);

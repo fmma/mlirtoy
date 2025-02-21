@@ -12,6 +12,8 @@ module {
   func.func @test_add_syntax(%arg0: !toy.int, %arg1: !toy.int) -> !toy.int {
     %0 = toy.const 1 : !toy.int
     %1 = toy.add %arg0, %0 : !toy.int
+    %2 = toy.get : !toy.int
+    toy.put %2
     return %1 : !toy.int
   }
 }

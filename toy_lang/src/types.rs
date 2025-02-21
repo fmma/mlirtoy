@@ -9,16 +9,24 @@ pub(crate) enum ToyPrim {
     Dup,
     Drop,
     Swap,
-    Swap2,
     Rot,
     Over,
+
     Get,
     Put,
-    Mul,
+
     Add,
+    Sub,
+    Mul,
+    Div,
     Neg,
+
+    Eq,
+    Less,
     And,
-    Or
+    Or,
+    Not
+
 }
 
 #[derive(Debug, Clone)]
