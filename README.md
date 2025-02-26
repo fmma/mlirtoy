@@ -24,6 +24,7 @@ p ::= d* e    (program)
 d ::= x = e;  (definition)
 
 e ::= e e     (concat)
+    | e + e   (branch)
     | p       (primitive)
     | x       (variable)
     | n       (constant)

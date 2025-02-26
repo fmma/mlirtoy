@@ -1,0 +1,1 @@
+choice = 10 mul + neg; 100 1 choice

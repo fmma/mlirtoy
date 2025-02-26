@@ -14,6 +14,14 @@ module {
     %1 = toy.add %arg0, %0 : !toy.int
     %2 = toy.get : !toy.int
     toy.put %2
+    %3 = toy.if %2 : !toy.int {
+      %4 = toy.const 1 : !toy.int
+      toy.yield %4
+    }
+    {
+      %5 = toy.const 1 : !toy.int
+      toy.yield %5
+    }
     return %1 : !toy.int
   }
 }

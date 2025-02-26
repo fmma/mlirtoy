@@ -47,6 +47,85 @@ fn compile_expr_to_mlir(mlir_prog: &MlirProgram, toy_expr: ToyExpression, mlir: 
             compile_expr_to_mlir(mlir_prog, *left, mlir);
             compile_expr_to_mlir(mlir_prog, *right, mlir);
         }
+        ToyExpression::Branch { left, right } => {
+            let b = mlir.pop();
+
+            let mut mlir_l = mlir.clone();
+            mlir_l.instructions.clear();
+            compile_expr_to_mlir(mlir_prog, *left.clone(), &mut mlir_l);
+
+            let mut mlir_r = mlir.clone();
+            mlir_r.instructions.clear();
+            mlir_r.n_vars = mlir_l.n_vars;
+            compile_expr_to_mlir(mlir_prog, *right.clone(), &mut mlir_r);
+
+            assert_eq!(mlir_l.stack.len(), mlir_r.stack.len());
+            assert_eq!(mlir_l.n_args, mlir_r.n_args);
+
+            let n = mlir_l.stack.len();
+
+            let k = mlir_l
+                .stack.iter().rev()
+                .zip(mlir_r.stack.iter().rev())
+                .position(|(x, y)| x == y)
+                .unwrap_or(n);
+
+            let mut mlir_l = mlir.clone();
+            mlir_l.n_vars += k;
+            mlir_l.instructions.clear();
+            compile_expr_to_mlir(mlir_prog, *left, &mut mlir_l);
+
+            let mut mlir_r = mlir.clone();
+            mlir_r.instructions.clear();
+            mlir_r.n_vars = mlir_l.n_vars;
+            compile_expr_to_mlir(mlir_prog, *right, &mut mlir_r);
+
+            mlir.emit(
+                format!(
+                    "toy.if {} : {} {{",
+                    b,
+                    (0..k)
+                        .map(|_x| "!toy.int".to_owned())
+                        .collect::<Vec<String>>()
+                        .join(", ")
+                ),
+                k,
+            );
+
+            mlir.n_vars = mlir_r.n_vars;
+            mlir.n_args = mlir_l.n_args;
+
+            for (o, i) in mlir_l.instructions {
+                mlir.instructions.push((o, i));
+            }
+
+            let r_l = mlir_l
+                .stack
+                .iter()
+                .rev()
+                .take(k)
+                .map(|x| x.to_string())
+                .collect::<Vec<_>>()
+                .join(", ");
+
+            mlir.emit(format!("toy.yield {}", r_l), 0);
+            mlir.emit(format!("}} {{"), 0);
+
+            for (o, i) in mlir_r.instructions {
+                mlir.instructions.push((o, i));
+            }
+
+            let r_r = mlir_r
+                .stack
+                .iter()
+                .rev()
+                .take(k)
+                .map(|x| x.to_string())
+                .collect::<Vec<_>>()
+                .join(", ");
+            mlir.emit(format!("toy.yield {}", r_r), 0);
+            mlir.emit(format!("}}"), 0);
+        }
         ToyExpression::Prim(toy_prim) => match toy_prim {
             ToyPrim::Dup => {
                 let x = mlir.pop();
@@ -112,26 +191,26 @@ fn compile_expr_to_mlir(mlir_prog: &MlirProgram, toy_expr: ToyExpression, mlir: 
                 let x = mlir.pop();
                 let y = mlir.pop();
                 mlir.emit(format!("toy.sub {}, {} : !toy.int", x, y), 1);
-            },
-            ToyPrim::Div =>  {
+            }
+            ToyPrim::Div => {
                 let x = mlir.pop();
                 let y = mlir.pop();
                 mlir.emit(format!("toy.div {}, {} : !toy.int", x, y), 1);
-            },
-            ToyPrim::Eq =>  {
+            }
+            ToyPrim::Eq => {
                 let x = mlir.pop();
                 let y = mlir.pop();
                 mlir.emit(format!("toy.eq {}, {} : !toy.int", x, y), 1);
-            },
-            ToyPrim::Less =>  {
+            }
+            ToyPrim::Less => {
                 let x = mlir.pop();
                 let y = mlir.pop();
                 mlir.emit(format!("toy.less {}, {} : !toy.int", x, y), 1);
-            },
-            ToyPrim::Not =>  {
+            }
+            ToyPrim::Not => {
                 let x = mlir.pop();
                 mlir.emit(format!("toy.not {} : !toy.int", x), 1);
-            },
+            }
         },
         ToyExpression::Constant(toy_constant) => {
             mlir.emit(format!("toy.const {} : !toy.int", toy_constant.0), 1);

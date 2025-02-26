@@ -35,6 +35,10 @@ pub(crate) enum ToyExpression {
         left: Box<ToyExpression>,
         right: Box<ToyExpression>,
     },
+    Branch {
+        left: Box<ToyExpression>,
+        right: Box<ToyExpression>,
+    },
     Prim(ToyPrim),
     Var(ToyVar),
     Constant(ToyConstant),

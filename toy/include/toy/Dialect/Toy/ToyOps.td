@@ -18,6 +18,24 @@ class UnOp<string mnemonic> : Op<Toy_Dialect, mnemonic, [Pure, ElementwiseMappab
   let assemblyFormat = "$input attr-dict `:` type($output)";
 }
 
+def IfOp : Op<Toy_Dialect, "if", []> {
+  let summary = "if-then-else operation";
+  let arguments = (ins Int:$condition);
+  let results = (outs Variadic<AnyType>:$results);
+  let regions = (region SizedRegion<1>:$thenRegion,
+                        SizedRegion<1>:$elseRegion);
+                        
+  let assemblyFormat = "$condition attr-dict `:` type($results) $thenRegion $elseRegion";
+}
+
+def YieldOp : Op<Toy_Dialect, "yield", [Pure, Terminator]> {
+  
+  let summary = "if-then-else operation";
+  let arguments = (ins Variadic<Int>:$results);
+                        
+  let assemblyFormat = "$results attr-dict";
+}
+
 def AddOp : BinOp<"add"> {
   let summary = "Addition.";
   let hasFolder = 1;
