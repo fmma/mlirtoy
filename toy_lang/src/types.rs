@@ -47,7 +47,8 @@ pub(crate) enum ToyExpression {
 #[derive(Debug)]
 pub(crate) struct ToyDef {
     pub(crate) name: ToyVar, 
-    pub(crate) body: ToyExpression
+    pub(crate) body: ToyExpression,
+    pub(crate) t: Option<(usize, usize)>
 }
 
 #[derive(Debug)]

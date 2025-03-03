@@ -20,17 +20,39 @@ pub fn parse(src: &str) -> ToyProgram {
 }
 
 fn parse_program(input: &str) -> IResult<&str, ToyProgram> {
-    (many0(parse_def), parse_expression)
+    (many0(alt((parse_def_typed, parse_def))), parse_expression)
         .map(|(defs, main)| ToyProgram { defs, main })
         .parse(input)
 }
 
 fn parse_def(input: &str) -> IResult<&str, ToyDef> {
     (parse_var, ws(tag("=")), parse_expression, ws(tag(";")))
-        .map(|(name, _, body, _)| ToyDef { name, body })
+        .map(|(name, _, body, _)| ToyDef {
+            name,
+            body,
+            t: None,
+        })
         .parse(input)
 }
 
+fn parse_def_typed(input: &str) -> IResult<&str, ToyDef> {
+    (
+        parse_var,
+        ws(tag(":")),
+        ws(decimal),
+        ws(tag("--")),
+        ws(decimal),
+        ws(tag("=")),
+        parse_expression,
+        ws(tag(";")),
+    )
+        .map(|(name, _, t1, _, t2, _, body, _)| ToyDef {
+            name,
+            body,
+            t: Some((t1.parse().unwrap(), t2.parse().unwrap())),
+        })
+        .parse(input)
+}
 
 fn parse_expression(input: &str) -> nom::IResult<&str, ToyExpression> {
     return parse_branch_or_concat_or_atom(input);
@@ -41,7 +63,11 @@ fn parse_branch_or_concat_or_atom(input: &str) -> nom::IResult<&str, ToyExpressi
 }
 
 fn parse_branch(input: &str) -> nom::IResult<&str, ToyExpression> {
-    return (parse_concat_or_atom, ws(tag("+")), parse_branch_or_concat_or_atom)
+    return (
+        parse_concat_or_atom,
+        ws(tag("+")),
+        parse_branch_or_concat_or_atom,
+    )
         .map(|(left, _, right)| ToyExpression::Branch {
             left: Box::new(left),
             right: Box::new(right),
@@ -63,9 +89,9 @@ fn parse_concat(input: &str) -> IResult<&str, ToyExpression> {
         .parse(input)
 }
 
-
 fn parse_atom(input: &str) -> IResult<&str, ToyExpression> {
     alt((
+        (ws(tag("[")), parse_expression, ws(tag("]"))).map(|(_, e, _)| e),
         parse_prim.map(ToyExpression::Prim),
         parse_constant.map(ToyExpression::Constant),
         parse_var.map(ToyExpression::Var),

@@ -4,9 +4,25 @@
 #include "toy/Dialect/Toy/ToyOps.h"
 
 #include "mlir/Dialect/CommonFolders.h"
+#include "mlir/IR/PatternMatch.h"
+#include "mlir/IR/Matchers.h"
+#include "llvm/ADT/SmallVector.h"
 
 namespace mlir::toy
 {
+
+    static void replaceOpWithRegion(PatternRewriter &rewriter, Operation *op,
+                                    Region &region, ValueRange blockArgs = {})
+    {
+        assert(llvm::hasSingleElement(region) && "expected single-region block");
+        Block *block = &region.front();
+        Operation *terminator = block->getTerminator();
+        ValueRange results = terminator->getOperands();
+        rewriter.inlineBlockBefore(block, op, blockArgs);
+        rewriter.replaceOp(op, results);
+        rewriter.eraseOp(terminator);
+    }
+
     OpFoldResult ConstantOp::fold(ConstantOp::FoldAdaptor adaptor)
     {
         return adaptor.getValueAttr();
@@ -80,5 +96,29 @@ namespace mlir::toy
         return constFoldUnaryOp<IntegerAttr, APInt, void>(
             adaptor.getOperands(), [&](APInt a)
             { return !a ? APInt(32, 1, true) : APInt(32, 0, true); });
+    }
+
+    struct ElimIf : public OpRewritePattern<IfOp>
+    {
+        using OpRewritePattern<IfOp>::OpRewritePattern;
+
+        LogicalResult matchAndRewrite(IfOp op, PatternRewriter &rewriter) const override
+        {
+            BoolAttr condition;
+            if (!matchPattern(op.getCondition(), m_Constant(&condition)))
+                return failure();
+
+            if (condition.getValue())
+                replaceOpWithRegion(rewriter, op, op.getThenRegion());
+            else
+                replaceOpWithRegion(rewriter, op, op.getElseRegion());
+
+            return success();
+        }
+    };
+
+    void IfOp::getCanonicalizationPatterns(RewritePatternSet &results, MLIRContext *context)
+    {
+        results.add<ElimIf>(context);
     }
 }

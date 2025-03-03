@@ -26,6 +26,7 @@ def IfOp : Op<Toy_Dialect, "if", []> {
                         SizedRegion<1>:$elseRegion);
                         
   let assemblyFormat = "$condition attr-dict `:` type($results) $thenRegion $elseRegion";
+  let hasCanonicalizer = 1;
 }
 
 def YieldOp : Op<Toy_Dialect, "yield", [Pure, Terminator]> {

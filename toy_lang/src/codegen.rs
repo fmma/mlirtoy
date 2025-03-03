@@ -10,12 +10,19 @@ pub(crate) struct MlirFunc {
 }
 
 pub struct MlirProgram {
+    types: Vec<(String, usize, usize)>,
     compiled_defs: Vec<MlirFunc>,
 }
 
 pub fn compile_to_mlir(program: &ToyProgram) -> MlirProgram {
     let mut mlir_prog = MlirProgram {
         compiled_defs: vec![],
+        types: program
+            .defs
+            .iter()
+            .map(|x| x.t.map(|(t1, t2)| (x.name.0.clone(), t1, t2)))
+            .flatten()
+            .collect::<Vec<_>>(),
     };
     for def in &program.defs {
         let name = &def.name.0;
@@ -65,7 +72,9 @@ fn compile_expr_to_mlir(mlir_prog: &MlirProgram, toy_expr: ToyExpression, mlir: 
             let n = mlir_l.stack.len();
 
             let k = mlir_l
-                .stack.iter().rev()
+                .stack
+                .iter()
+                .rev()
                 .zip(mlir_r.stack.iter().rev())
                 .position(|(x, y)| x == y)
                 .unwrap_or(n);
@@ -79,6 +88,10 @@ fn compile_expr_to_mlir(mlir_prog: &MlirProgram, toy_expr: ToyExpression, mlir: 
             mlir_r.instructions.clear();
             mlir_r.n_vars = mlir_l.n_vars;
             compile_expr_to_mlir(mlir_prog, *right, &mut mlir_r);
+
+            for _ in 0..mlir_l.n_args {
+                mlir.pop();
+            }
 
             mlir.emit(
                 format!(
@@ -235,9 +248,46 @@ fn compile_expr_to_mlir(mlir_prog: &MlirProgram, toy_expr: ToyExpression, mlir: 
                     mlir_func.stack.len(),
                 );
             }
-            None => todo!(),
+            None => match mlir_prog.types.iter().find(|x| x.0 == toy_var.0) {
+                Some((name, n_args, n_results)) => {
+                    let args = (0..*n_args)
+                        .map(|_x| format!("{}", mlir.pop()))
+                        .collect::<Vec<String>>()
+                        .join(", ");
+                    mlir.emit(
+                        format!(
+                            "func.call @{} ({}) : {}",
+                            name,
+                            args,
+                            print_type(*n_args, *n_results)
+                        ),
+                        *n_results,
+                    );
+                }
+                None => panic!("Unbound var {}", toy_var.0),
+            },
         },
     }
+}
+
+fn print_type(n_args: usize, n_outs: usize) -> String {
+    let in_type = format!(
+        "({})",
+        (0..n_args)
+            .map(|_x| "!toy.int".to_owned())
+            .collect::<Vec<String>>()
+            .join(", ")
+    );
+
+    let out_type = format!(
+        " -> ({})",
+        (0..n_outs)
+            .map(|_x| "!toy.int".to_owned())
+            .collect::<Vec<String>>()
+            .join(", ")
+    );
+
+    return format!("{}{}", in_type, out_type);
 }
 
 impl MlirFunc {
@@ -264,23 +314,7 @@ impl MlirFunc {
     }
 
     fn print_type(self) -> String {
-        let in_type = format!(
-            "({})",
-            (0..self.n_args)
-                .map(|_x| "!toy.int".to_owned())
-                .collect::<Vec<String>>()
-                .join(", ")
-        );
-
-        let out_type = format!(
-            " -> ({})",
-            (0..self.stack.len())
-                .map(|_x| "!toy.int".to_owned())
-                .collect::<Vec<String>>()
-                .join(", ")
-        );
-
-        return format!("{}{}", in_type, out_type);
+        return print_type(self.n_args, self.stack.len());
     }
 
     fn to_mlir_string(self) -> String {
