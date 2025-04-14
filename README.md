@@ -89,7 +89,7 @@ n ::= <positive integer literals>
 
 `get` (`put`) reads (writes) a number from (to) standard input (output).
 
-The type syntax `: n1 -- n2` is optional in definitions. It is needed when calling forwardly declared definitions or doing recursion. The syntax reads _"pops `n1` elements, and pushed `n2` elements"_.
+The type syntax `: n1 -- n2` is optional in definitions. It is needed when calling forwardly declared definitions or doing recursion. The syntax reads _"Calling this definition pops `n1` elements, and pushes `n2` elements"_.
 
 ## Articles - progress
 
