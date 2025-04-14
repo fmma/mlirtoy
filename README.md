@@ -77,7 +77,6 @@ p ::= dup
     | mul
     | duv
     | neg
-
     
     | eq
     | less
@@ -88,13 +87,9 @@ p ::= dup
 n ::= <positive integer literals>
 ```
 
-Example program:
-```
-double = dup mul
-get double put
-```
+`get` (`put`) reads (writes) a number from (to) standard input (output).
 
-The result is a program that reads a number from standard input, doubles it, and prints the result to standard output.
+The type syntax `: n1 -- n2` is optional in definitions. It is needed when calling forwardly declared definitions or doing recursion. The syntax reads _"pops `n1` elements, and pushed `n2` elements"_.
 
 ## Articles - progress
 
