@@ -4,9 +4,38 @@ A personal toy programming language for me to learn LLVM and MLIR.
 
 The language is inspired by Jeremy Kun's MLIR tutorial: https://github.com/j2kun/mlir-tutorial.
 
+## Examples
+Small program adding 1, 2, and 3
+```
+1 2 3 add add
+```
+This small program pushes 1, 2, and 3 on the stack and executes `add`, which
+adds 2 and 3 pushing 5 on the stack. Then it executes `add` again for the final
+result.
+
+The program is compiled to MLIR resulting in the following program:
+```
+func.func @main() -> (!toy.int) {
+  %x0 = toy.const 1 : !toy.int
+  %x1 = toy.const 2 : !toy.int
+  %x2 = toy.const 3 : !toy.int
+  %x3 = toy.add %x2, %x1 : !toy.int
+  %x4 = toy.add %x3, %x0 : !toy.int
+  return %x4 : !toy.int
+}
 ```
 
+Here is an example of a program that computes the 10'th Fibonacci number using a
+recursive algorithm.
 ```
+fib : 1 -- 1 = dup 2 less [
+    drop 1 +
+    dup 1 neg add fib 2 neg rot rot add fib add
+];
+10 fib
+```
+
+
 
 ## Name ideas
 
