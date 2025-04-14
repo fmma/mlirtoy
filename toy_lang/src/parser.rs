@@ -20,24 +20,68 @@ pub fn parse(src: &str) -> ToyProgram {
 }
 
 fn parse_program(input: &str) -> IResult<&str, ToyProgram> {
-    (many0(parse_def), parse_expression)
+    (many0(alt((parse_def_typed, parse_def))), parse_expression)
         .map(|(defs, main)| ToyProgram { defs, main })
         .parse(input)
 }
 
 fn parse_def(input: &str) -> IResult<&str, ToyDef> {
     (parse_var, ws(tag("=")), parse_expression, ws(tag(";")))
-        .map(|(name, _, body, _)| ToyDef { name, body })
+        .map(|(name, _, body, _)| ToyDef {
+            name,
+            body,
+            t: None,
+        })
         .parse(input)
 }
 
-fn parse_expression(input: &str) -> IResult<&str, ToyExpression> {
-    alt((parse_expression_concat, parse_expression_atom)).parse(input)
+fn parse_def_typed(input: &str) -> IResult<&str, ToyDef> {
+    (
+        parse_var,
+        ws(tag(":")),
+        ws(decimal),
+        ws(tag("--")),
+        ws(decimal),
+        ws(tag("=")),
+        parse_expression,
+        ws(tag(";")),
+    )
+        .map(|(name, _, t1, _, t2, _, body, _)| ToyDef {
+            name,
+            body,
+            t: Some((t1.parse().unwrap(), t2.parse().unwrap())),
+        })
+        .parse(input)
 }
 
-fn parse_expression_concat(input: &str) -> IResult<&str, ToyExpression> {
-    parse_expression_atom
-        .and(parse_expression)
+fn parse_expression(input: &str) -> nom::IResult<&str, ToyExpression> {
+    return parse_branch_or_concat_or_atom(input);
+}
+
+fn parse_branch_or_concat_or_atom(input: &str) -> nom::IResult<&str, ToyExpression> {
+    return alt((parse_branch, parse_concat_or_atom)).parse(input);
+}
+
+fn parse_branch(input: &str) -> nom::IResult<&str, ToyExpression> {
+    return (
+        parse_concat_or_atom,
+        ws(tag("+")),
+        parse_branch_or_concat_or_atom,
+    )
+        .map(|(left, _, right)| ToyExpression::Branch {
+            left: Box::new(left),
+            right: Box::new(right),
+        })
+        .parse(input);
+}
+
+fn parse_concat_or_atom(input: &str) -> IResult<&str, ToyExpression> {
+    alt((parse_concat, parse_atom)).parse(input)
+}
+
+fn parse_concat(input: &str) -> IResult<&str, ToyExpression> {
+    parse_atom
+        .and(parse_concat_or_atom)
         .map(|(e1, e2)| ToyExpression::Concat {
             left: Box::new(e1),
             right: Box::new(e2),
@@ -45,8 +89,9 @@ fn parse_expression_concat(input: &str) -> IResult<&str, ToyExpression> {
         .parse(input)
 }
 
-fn parse_expression_atom(input: &str) -> IResult<&str, ToyExpression> {
+fn parse_atom(input: &str) -> IResult<&str, ToyExpression> {
     alt((
+        (ws(tag("[")), parse_expression, ws(tag("]"))).map(|(_, e, _)| e),
         parse_prim.map(ToyExpression::Prim),
         parse_constant.map(ToyExpression::Constant),
         parse_var.map(ToyExpression::Var),
@@ -59,16 +104,20 @@ fn parse_prim(input: &str) -> IResult<&str, ToyPrim> {
         value(ToyPrim::Dup, tag("dup")),
         value(ToyPrim::Drop, tag("drop")),
         value(ToyPrim::Swap, tag("swap")),
-        value(ToyPrim::Swap2, tag("2swap")),
         value(ToyPrim::Rot, tag("rot")),
         value(ToyPrim::Over, tag("over")),
         value(ToyPrim::Get, tag("get")),
         value(ToyPrim::Put, tag("put")),
-        value(ToyPrim::Mul, tag("mul")),
         value(ToyPrim::Add, tag("add")),
+        value(ToyPrim::Sub, tag("sub")),
+        value(ToyPrim::Mul, tag("mul")),
+        value(ToyPrim::Div, tag("div")),
         value(ToyPrim::Neg, tag("neg")),
+        value(ToyPrim::Eq, tag("eq")),
+        value(ToyPrim::Less, tag("less")),
         value(ToyPrim::And, tag("and")),
         value(ToyPrim::Or, tag("or")),
+        value(ToyPrim::Not, tag("not")),
     )))
     .parse(input)
 }

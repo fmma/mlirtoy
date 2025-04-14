@@ -25,7 +25,14 @@ namespace mlir::toy
 #define GET_OP_LIST
 #include "toy/Dialect/Toy/ToyOps.cpp.inc"
             >();
+    }
 
-        std::cout << "We have initialized the toy dialect" << std::endl;
+    Operation *ToyDialect::materializeConstant(OpBuilder &builder, Attribute value,
+                                               Type type, Location loc)
+    {
+        auto val = dyn_cast<IntegerAttr>(value);
+        if (!val)
+            return nullptr;
+        return builder.create<ConstantOp>(loc, type, val);
     }
 }

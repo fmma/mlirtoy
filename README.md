@@ -25,9 +25,11 @@ The language is a simple concatenative language. The grammar consists of express
 ```
 p ::= d* e    (program)
 
-d ::= x = e;  (definition)
+d ::= x = e;          (definition)
+    | x = e : n -- n; (typed definition);
 
 e ::= e e     (concat)
+    | e + e   (branch)
     | p       (primitive)
     | x       (variable)
     | n       (constant)
@@ -35,16 +37,24 @@ e ::= e e     (concat)
 p ::= dup
     | drop
     | swap
-    | swap2
     | rot
     | over
-    | mul
-    | add
-    | neg
-    | and
-    | or
+
     | put
     | get
+
+    | add
+    | sub
+    | mul
+    | duv
+    | neg
+
+    
+    | eq
+    | less
+    | and
+    | or    
+    | not
 
 n ::= <positive integer literals>
 ```
@@ -65,9 +75,9 @@ The result is a program that reads a number from standard input, doubles it, and
 4.  DONE [Using Tablegen for Passes](https://jeremykun.com/2023/08/10/mlir-using-tablegen-for-passes/)
 5.  DONE [Defining a New Dialect](https://jeremykun.com/2023/08/21/mlir-defining-a-new-dialect/)
 6.  DONE [Using Traits](https://jeremykun.com/2023/09/07/mlir-using-traits/)
-7.  [Folders and Constant Propagation](https://jeremykun.com/2023/09/11/mlir-folders/)
-8.  [Verifiers](https://jeremykun.com/2023/09/13/mlir-verifiers/)
-9.  [Canonicalizers and Declarative Rewrite Patterns](https://jeremykun.com/2023/09/20/mlir-canonicalizers-and-declarative-rewrite-patterns/)
+7.  DONE [Folders and Constant Propagation](https://jeremykun.com/2023/09/11/mlir-folders/)
+8.  DONE [Verifiers](https://jeremykun.com/2023/09/13/mlir-verifiers/)
+9.  DONE [Canonicalizers and Declarative Rewrite Patterns](https://jeremykun.com/2023/09/20/mlir-canonicalizers-and-declarative-rewrite-patterns/)
 10. [Dialect Conversion](https://jeremykun.com/2023/10/23/mlir-dialect-conversion/)
 11. [Lowering through LLVM](https://jeremykun.com/2023/11/01/mlir-lowering-through-llvm/)
 12. [A Global Optimization and Dataflow Analysis](https://jeremykun.com/2023/11/15/mlir-a-global-optimization-and-dataflow-analysis/)

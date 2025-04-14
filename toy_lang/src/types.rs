@@ -9,21 +9,33 @@ pub(crate) enum ToyPrim {
     Dup,
     Drop,
     Swap,
-    Swap2,
     Rot,
     Over,
+
     Get,
     Put,
-    Mul,
+
     Add,
+    Sub,
+    Mul,
+    Div,
     Neg,
+
+    Eq,
+    Less,
     And,
-    Or
+    Or,
+    Not
+
 }
 
 #[derive(Debug, Clone)]
 pub(crate) enum ToyExpression {
     Concat {
+        left: Box<ToyExpression>,
+        right: Box<ToyExpression>,
+    },
+    Branch {
         left: Box<ToyExpression>,
         right: Box<ToyExpression>,
     },
@@ -35,7 +47,8 @@ pub(crate) enum ToyExpression {
 #[derive(Debug)]
 pub(crate) struct ToyDef {
     pub(crate) name: ToyVar, 
-    pub(crate) body: ToyExpression
+    pub(crate) body: ToyExpression,
+    pub(crate) t: Option<(usize, usize)>
 }
 
 #[derive(Debug)]

@@ -10,4 +10,5 @@ def Toy_Dialect : Dialect {
     let cppNamespace = "::mlir::toy";
 
     let useDefaultTypePrinterParser = 1;
+    let hasConstantMaterializer = 1;
 }
