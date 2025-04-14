@@ -58,7 +58,7 @@ d ::= x = e;          (definition)
     | x = e : n -- n; (typed definition);
 
 e ::= e e     (concat)
-    | e + e   (branch)
+    | [e + e] (branch)
     | p       (primitive)
     | x       (variable)
     | n       (constant)
@@ -86,6 +86,7 @@ p ::= dup
 
 n ::= <positive integer literals>
 ```
+Branch consumes the top of the stack. If it is non-zero, the first branch is executed. If it is zero, the second branch is executed.
 
 `get` (`put`) reads (writes) a number from (to) standard input (output).
 
