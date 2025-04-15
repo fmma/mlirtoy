@@ -7,6 +7,7 @@ set (LIBS
     MLIROptLib
     AffineFullUnroll
     ToyDialect
+    ToyToStandard
 )
 
 add_llvm_executable(toy-opt toy-opt.cpp)

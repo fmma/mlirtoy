@@ -5,6 +5,7 @@
 #include "mlir/Tools/mlir-opt/MlirOptMain.h"
 #include "toy/Transform/Affine/Passes.h"
 #include "toy/Dialect/Toy/ToyDialect.h"
+#include "toy/Conversion/ToyToStandard/ToyToStandard.h"
 
 int main(int argc, char **argv)
 {
@@ -12,6 +13,7 @@ int main(int argc, char **argv)
     mlir::registerAllDialects(registry);
     mlir::registerAllPasses();
     mlir::toy::registerAffinePasses();
+    mlir::toy::registerToyToStandardPasses();
 
     registry.insert<mlir::toy::ToyDialect>();
 
