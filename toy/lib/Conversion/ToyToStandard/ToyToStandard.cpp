@@ -23,15 +23,24 @@ namespace mlir::toy
         }
     };
 
-  struct ToyToStandard : impl::ToyToStandardBase<ToyToStandard>
-  {
-    using ToyToStandardBase::ToyToStandardBase;
-
-    void runOnOperation() override
+    struct ToyToStandard : impl::ToyToStandardBase<ToyToStandard>
     {
-      MLIRContext *context = &getContext();
-      auto *module = getOperation();
-      // TODO: implement pass
-    }
-  };
+        using ToyToStandardBase::ToyToStandardBase;
+
+        void runOnOperation() override
+        {
+            MLIRContext *context = &getContext();
+            auto *module = getOperation();
+
+            ConversionTarget target(*context);
+            target.addIllegalDialect<ToyDialect>();
+
+            RewritePatternSet patterns(context);
+
+            if (failed(applyPartialConversion(module, target, std::move(patterns))))
+            {
+                signalPassFailure();
+            }
+        }
+    };
 }
