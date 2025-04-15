@@ -1,5 +1,6 @@
-fib : 1 -- 1 = dup 2 less [
-    drop 1 +
+fib : 1 -- 1 = dup 2 less ? [
+    drop 1
+] [
     dup 1 neg add fib 2 neg rot rot add fib add
 ];
 10 fib

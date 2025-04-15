@@ -62,13 +62,17 @@ fn parse_branch_or_concat_or_atom(input: &str) -> nom::IResult<&str, ToyExpressi
     return alt((parse_branch, parse_concat_or_atom)).parse(input);
 }
 
+fn parse_branch_or_atom(input: &str) -> nom::IResult<&str, ToyExpression> {
+    return alt((parse_branch, parse_atom)).parse(input);
+}
+
 fn parse_branch(input: &str) -> nom::IResult<&str, ToyExpression> {
     return (
-        parse_concat_or_atom,
-        ws(tag("+")),
-        parse_branch_or_concat_or_atom,
+        ws(tag("?")),
+        parse_branch_or_atom,
+        parse_branch_or_atom,
     )
-        .map(|(left, _, right)| ToyExpression::Branch {
+        .map(|(_, left, right)| ToyExpression::Branch {
             left: Box::new(left),
             right: Box::new(right),
         })
@@ -81,7 +85,7 @@ fn parse_concat_or_atom(input: &str) -> IResult<&str, ToyExpression> {
 
 fn parse_concat(input: &str) -> IResult<&str, ToyExpression> {
     parse_atom
-        .and(parse_concat_or_atom)
+        .and(parse_branch_or_concat_or_atom)
         .map(|(e1, e2)| ToyExpression::Concat {
             left: Box::new(e1),
             right: Box::new(e2),

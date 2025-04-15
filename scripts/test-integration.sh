@@ -1,1 +1,1 @@
-build/toy_lang/debug/toy_lang toy_lang/tests/swap.toy | build/toy/tools/toy-opt
+build/toy_lang/debug/toy_lang toy_lang/tests/branch.toy | build/toy/tools/toy-opt

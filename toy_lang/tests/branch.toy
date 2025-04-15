@@ -1,1 +1,6 @@
-choice = 10 mul + neg; 100 1 choice
+choice = ? [10 mul] neg;
+nested_choice_1 = ? [drop 1] ? 2 3;
+nested_choice_2 = ? ? 1 2 [drop 3];
+100 1 choice 
+dup nested_choice_1
+dup nested_choice_2

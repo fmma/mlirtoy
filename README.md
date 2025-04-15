@@ -28,8 +28,9 @@ func.func @main() -> (!toy.int) {
 Here is an example of a program that computes the 10'th Fibonacci number using a
 recursive algorithm.
 ```
-fib : 1 -- 1 = dup 2 less [
-    drop 1 +
+fib : 1 -- 1 = dup 2 less ? [
+    drop 1
+] [
     dup 1 neg add fib 2 neg rot rot add fib add
 ];
 10 fib
@@ -49,7 +50,9 @@ fib : 1 -- 1 = dup 2 less [
 
 ## The language
 
-The language is a simple concatenative language. The grammar consists of expressions `e` including primiteves `p`, variables `x` and integer constants `n`. On top of that, we have definitions `d` and programs `p`.
+The language is a simple concatenative language. The grammar consists of
+expressions `e` including primiteves `p`, variables `x` and integer constants
+`n`. On top of that, we have definitions `d` and programs `p`.
 
 ```
 p ::= d* e    (program)
@@ -57,11 +60,11 @@ p ::= d* e    (program)
 d ::= x = e;          (definition)
     | x = e : n -- n; (typed definition);
 
-e ::= e e     (concat)
-    | [e + e] (branch)
-    | p       (primitive)
-    | x       (variable)
-    | n       (constant)
+e ::= e e   (concat)
+    | ? e e (branch)
+    | p     (primitive)
+    | x     (variable)
+    | n     (constant)
 
 p ::= dup
     | drop
@@ -86,11 +89,14 @@ p ::= dup
 
 n ::= <positive integer literals>
 ```
-Branch consumes the top of the stack. If it is non-zero, the first branch is executed. If it is zero, the second branch is executed.
+Branch `? e1 e2` consumes the top of the stack. If it is non-zero, the first
+branch `e1` is executed. If it is zero, the second branch `e2` is executed.
 
 `get` (`put`) reads (writes) a number from (to) standard input (output).
 
-The type syntax `: n1 -- n2` is optional in definitions. It is needed when calling forwardly declared definitions or doing recursion. The syntax reads _"Calling this definition pops `n1` elements, and pushes `n2` elements"_.
+The type syntax `: n1 -- n2` is optional in definitions. It is needed when
+calling forwardly declared definitions or doing recursion. The syntax reads
+_"Calling this definition pops `n1` elements, and pushes `n2` elements"_.
 
 ## Articles - progress
 
